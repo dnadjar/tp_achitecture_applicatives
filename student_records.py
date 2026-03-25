@@ -1,38 +1,35 @@
+from collections.abc import Iterable, Iterator
+
 class Student:
     def __init__(self, name: str, m1: float, m2: float, m3: float):
         self.name = name
         self.grades = [m1, m2, m3]
 
-    def get_average(self) -> float:
-        return sum(self.grades) / len(self.grades)
-
     def __str__(self):
-        return f"{self.name} (M1: {self.grades[0]}, M2: {self.grades[1]}, M3: {self.grades[2]}, Moyenne: {self.get_average():.2f})"
+        return f"{self.name} (M1: {self.grades[0]})"
 
-class SchoolClass:
+class Matter1Iterator(Iterator):
+    def __init__(self, students: list):
+        self._students = sorted(students, key=lambda s: s.grades[0], reverse=True)
+        self._index = 0
+
+    def __next__(self):
+        try:
+            student = self._students[self._index]
+        except IndexError:
+            raise StopIteration
+        self._index += 1
+        return student
+
+class SchoolClass(Iterable):
     def __init__(self):
         self.students = []
 
     def add_student(self, student: Student):
         self.students.append(student)
 
-    def rank_matter_1(self):
-        sorted_students = sorted(self.students, key=lambda s: s.grades[0], reverse=True)
-        print("\nClassement Matière 1 :")
-        for student in sorted_students:
-            print(student)
-
-    def rank_matter_2(self):
-        sorted_students = sorted(self.students, key=lambda s: s.grades[1], reverse=True)
-        print("\nClassement Matière 2 :")
-        for student in sorted_students:
-            print(student)
-
-    def rank_matter_3(self):
-        sorted_students = sorted(self.students, key=lambda s: s.grades[2], reverse=True)
-        print("\nClassement Matière 3 :")
-        for student in sorted_students:
-            print(student)
+    def __iter__(self) -> Iterator:
+        return Matter1Iterator(self.students)
 
 if __name__ == '__main__':
     school_class = SchoolClass()
@@ -40,6 +37,6 @@ if __name__ == '__main__':
     school_class.add_student(Student('A', 8, 2, 17))
     school_class.add_student(Student('V', 9, 14, 14))
 
-    school_class.rank_matter_1()
-    school_class.rank_matter_2()
-    school_class.rank_matter_3()
+    print("Parcours:")
+    for student in school_class:
+        print(student)
