@@ -59,7 +59,7 @@ class SchoolClass(Iterable):
 
 if __name__ == '__main__':
     school_class = SchoolClass()
-    # On peut désormais passer 4 notes grâce au décorateur
+
     school_class.add_student(Student('J', 10, 12, 13, 15))
     school_class.add_student(Student('A', 8, 2, 17, 11))
     school_class.add_student(Student('V', 9, 14, 14, 18))
