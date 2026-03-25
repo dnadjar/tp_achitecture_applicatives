@@ -61,8 +61,16 @@ class Matter4Iterator(Iterator):
 
 @add_matter4_iterator
 class SchoolClass(Iterable):
+    _instance = None
+
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super(SchoolClass, cls).__new__(cls)
+        return cls._instance
+
     def __init__(self):
-        self.students = []
+        if not hasattr(self, 'students'):
+            self.students = []
 
     def add_student(self, student: Student):
         self.students.append(student)
@@ -77,11 +85,18 @@ class SchoolClass(Iterable):
         return Matter3Iterator(self.students)
 
 if __name__ == '__main__':
-    school_class = SchoolClass()
-    school_class.add_student(Student('J', 10, 12, 13, 15))
-    school_class.add_student(Student('A', 8, 2, 17, 11))
-    school_class.add_student(Student('V', 9, 14, 14, 18))
+    s1 = SchoolClass()
+    s2 = SchoolClass()
 
-    print("Classement par Matière 4 (via décorateurs) :")
-    for student in school_class.iter_matter_4():
+    print(f"Id instance 1: {id(s1)}")
+    print(f"Id instance 2: {id(s2)}")
+    
+    s1.add_student(Student('J', 10, 12, 13, 15))
+    s2.add_student(Student('A', 8, 2, 17, 11))
+    s1.add_student(Student('V', 9, 14, 14, 18))
+
+    print(f"\nNombre d'étudiants via s2: {len(s2.students)}")
+    
+    print("\nClassement Matière 4 via l'instance s2 :")
+    for student in s2.iter_matter_4():
         print(student)
