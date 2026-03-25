@@ -8,6 +8,12 @@ def add_fourth_matter(cls):
     cls.__init__ = new_init
     return cls
 
+def add_matter4_iterator(cls):
+    def iter_matter_4(self) -> Iterator:
+        return Matter4Iterator(self.students)
+    cls.iter_matter_4 = iter_matter_4
+    return cls
+
 @add_fourth_matter
 class Student:
     def __init__(self, name: str, m1: float, m2: float, m3: float):
@@ -15,8 +21,7 @@ class Student:
         self.grades = [m1, m2, m3]
 
     def __str__(self):
-        grades_display = ", ".join([f"M{i+1}: {g}" for i, g in enumerate(self.grades)])
-        return f"{self.name} ({grades_display})"
+        return f"{self.name} (Notes: {self.grades})"
 
 class Matter1Iterator(Iterator):
     def __init__(self, students: list):
@@ -45,25 +50,38 @@ class Matter3Iterator(Iterator):
         student = self._students[self._index]; self._index += 1
         return student
 
+class Matter4Iterator(Iterator):
+    def __init__(self, students: list):
+        self._students = sorted(students, key=lambda s: s.grades[3], reverse=True)
+        self._index = 0
+    def __next__(self):
+        if self._index >= len(self._students): raise StopIteration
+        student = self._students[self._index]; self._index += 1
+        return student
+
+@add_matter4_iterator
 class SchoolClass(Iterable):
     def __init__(self):
         self.students = []
+
     def add_student(self, student: Student):
         self.students.append(student)
+
     def __iter__(self) -> Iterator:
         return Matter1Iterator(self.students)
+
     def iter_matter_2(self) -> Iterator:
         return Matter2Iterator(self.students)
+
     def iter_matter_3(self) -> Iterator:
         return Matter3Iterator(self.students)
 
 if __name__ == '__main__':
     school_class = SchoolClass()
-
     school_class.add_student(Student('J', 10, 12, 13, 15))
     school_class.add_student(Student('A', 8, 2, 17, 11))
     school_class.add_student(Student('V', 9, 14, 14, 18))
 
-    print("Liste des étudiants (avec la 4ème matière via décorateur) :")
-    for s in school_class:
-        print(s)
+    print("Classement par Matière 4 (via décorateurs) :")
+    for student in school_class.iter_matter_4():
+        print(student)
